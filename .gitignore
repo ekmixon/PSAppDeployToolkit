@@ -1,0 +1,12 @@
+/*
+!.vscode
+!AppDeployToolkit
+!Files
+Files/*
+.DS_Store
+!.gitignore
+!.travis.yml
+!Deploy-Application.exe.config
+!Deploy-Application.ps1
+!README.md
+!WindowsPowerShell.code-workspace
