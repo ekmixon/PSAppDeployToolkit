@@ -137,7 +137,8 @@ Try {
         }
 
         ## !<Perform Installation tasks here>
-
+        # !Execute-Process -Path "APP.exe" -Parameters "--quiet"
+        # !Execute-MSI -Action Install -Path 'APP.msi' -Parameters '/qn'
 
         ##*===============================================
         ##* POST-INSTALLATION
@@ -145,6 +146,7 @@ Try {
         [string]$installPhase = 'Post-Installation'
 
         ## !<Perform Post-Installation tasks here>
+        # !Remove-Item -Path "C:\Users\Public\Desktop\APP.lnk" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
 
         ## Display a message at the end of the install
         If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
@@ -176,7 +178,7 @@ Try {
         }
 
         # !<Perform Uninstallation tasks here>
-
+        # !Execute-MSI -Action Uninstall -Path '{GUID}' -Parameters '/q
 
         ##*===============================================
         ##* POST-UNINSTALLATION
