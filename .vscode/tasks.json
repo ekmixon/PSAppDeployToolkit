@@ -1,3 +1,14 @@
+// Available variables which can be used inside of strings:
+// ${workspaceFolder} the path of the workspace folder that contains the tasks.json file
+// ${workspaceFolderBasename} the name of the workspace folder that contains the tasks.json file without any slashes (/)
+// ${file} the current opened file
+// ${relativeFile} the current opened file relative to the workspace folder containing the file
+// ${fileBasename} the current opened file's basename
+// ${fileBasenameNoExtension} the current opened file's basename without the extension
+// ${fileDirname} the current opened file's dirname
+// ${fileExtname} the current opened file's extension
+// ${cwd} the task runner's current working directory on startup
+// ${lineNumber} the current selected line number in the active file
 {
     "version": "2.0.0",
     "windows": {
@@ -15,9 +26,63 @@
     },
     "tasks": [
         {
-            "label": "Debug",
+            "label": "Configure Deploy Application",
             "type": "shell",
-            "command": "${cwd}/debug.ps1",
+            "command": "powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/.vscode/Deploy-Application-Configuration.ps1",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Install Interactive",
+            "type": "shell",
+            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Install -DeployMode Interactive' -Verb runAs",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Install Non-Interactive",
+            "type": "shell",
+            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Install -DeployMode NonInteractive' -Verb runAs",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Install Silent",
+            "type": "shell",
+            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Install -DeployMode Silent' -Verb runAs",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Uninstall Interactive",
+            "type": "shell",
+            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Uninstall -DeployMode Interactive' -Verb runAs",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Uninstall Non-Interactive",
+            "type": "shell",
+            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Uninstall -DeployMode Non-Interactive' -Verb runAs",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Uninstall Silent",
+            "type": "shell",
+            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Uninstall -DeployMode Silent' -Verb runAs",
             "group": {
                 "kind": "build",
                 "isDefault": true
