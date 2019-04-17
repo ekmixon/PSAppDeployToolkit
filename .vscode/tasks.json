@@ -28,7 +28,7 @@
         {
             "label": "Configure Deploy Application",
             "type": "shell",
-            "command": "powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/.vscode/Deploy-Application-Configuration.ps1",
+            "command": "powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/.vscode/tasks.ps1",
             "group": {
                 "kind": "build",
                 "isDefault": true
