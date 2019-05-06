@@ -37,7 +37,7 @@
         {
             "label": "Install Interactive",
             "type": "shell",
-            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Install -DeployMode Interactive' -Verb runAs",
+            "command": "Start-Process psexec -ArgumentList '-w ${cwd} -i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Install -DeployMode Interactive' -Verb runAs",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -46,7 +46,7 @@
         {
             "label": "Install Non-Interactive",
             "type": "shell",
-            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Install -DeployMode NonInteractive' -Verb runAs",
+            "command": "Start-Process psexec -ArgumentList '-w ${cwd} -i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Install -DeployMode NonInteractive' -Verb runAs",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -55,7 +55,7 @@
         {
             "label": "Install Silent",
             "type": "shell",
-            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Install -DeployMode Silent' -Verb runAs",
+            "command": "Start-Process psexec -ArgumentList '-w ${cwd} -i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Install -DeployMode Silent' -Verb runAs",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -64,7 +64,7 @@
         {
             "label": "Uninstall Interactive",
             "type": "shell",
-            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Uninstall -DeployMode Interactive' -Verb runAs",
+            "command": "Start-Process psexec -ArgumentList '-w ${cwd} -i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Uninstall -DeployMode Interactive' -Verb runAs",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -73,7 +73,7 @@
         {
             "label": "Uninstall Non-Interactive",
             "type": "shell",
-            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Uninstall -DeployMode Non-Interactive' -Verb runAs",
+            "command": "Start-Process psexec -ArgumentList '-w ${cwd} -i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Uninstall -DeployMode Non-Interactive' -Verb runAs",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -82,7 +82,7 @@
         {
             "label": "Uninstall Silent",
             "type": "shell",
-            "command": "Start-Process psexec -ArgumentList '-i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Uninstall -DeployMode Silent' -Verb runAs",
+            "command": "Start-Process psexec -ArgumentList '-w ${cwd} -i -s powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/Deploy-Application.ps1 -DeploymentType Uninstall -DeployMode Silent' -Verb runAs",
             "group": {
                 "kind": "build",
                 "isDefault": true
