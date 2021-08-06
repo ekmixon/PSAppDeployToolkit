@@ -9,5 +9,5 @@ Files/*
 !Deploy-Application.exe.config
 !Deploy-Application.ps1
 !README.md
-!.init.ps1
+!init.ps1
 !PSAppDeployToolkit.code-workspace
