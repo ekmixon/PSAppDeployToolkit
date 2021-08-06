@@ -24,13 +24,13 @@ New-TemporaryFile | ForEach-Object {
   Set-Item -Path Env:HOME -Value $Env:USERPROFILE
   Start-Process "git" -ArgumentList "init" -Wait -NoNewWindow -WorkingDirectory "$_"
   Start-Process "git" -ArgumentList "remote add origin https://github.com/cgerke/PSAppDeployToolkit" -Wait -NoNewWindow -WorkingDirectory "$_"
-  Start-Process "git" -ArgumentList "branch -M Master" -Wait -NoNewWindow -WorkingDirectory "$_"
+  Start-Process "git" -ArgumentList "branch -M main" -Wait -NoNewWindow -WorkingDirectory "$_"
   Start-Process "git" -ArgumentList "fetch --all" -Wait -NoNewWindow -WorkingDirectory "$_"
-  Start-Process "git" -ArgumentList "checkout Master" -Wait -NoNewWindow -WorkingDirectory "$_"
-  Start-Process "git" -ArgumentList "push --set-upstream origin Master" -Wait -NoNewWindow -WorkingDirectory "$_"
+  Start-Process "git" -ArgumentList "checkout main" -Wait -NoNewWindow -WorkingDirectory "$_"
+  Start-Process "git" -ArgumentList "push --set-upstream origin main" -Wait -NoNewWindow -WorkingDirectory "$_"
   Move-Item -Path "$_\.git" -Destination "$Repo\" -Force -Verbose
   Set-Location "$Repo"
-  Start-Process "git" -ArgumentList "reset --hard origin/Master" -Wait -NoNewWindow -WorkingDirectory "$Repo"
+  Start-Process "git" -ArgumentList "reset --hard origin/main" -Wait -NoNewWindow -WorkingDirectory "$Repo"
   Set-Location "$Documents"
   Set-Location "$Repo"
   Add-Type -AssemblyName System.Windows.Forms
