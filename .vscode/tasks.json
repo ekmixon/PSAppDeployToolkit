@@ -26,6 +26,25 @@
     },
     "tasks": [
         {
+            "label": "Test Deployment",
+            "type": "shell",
+            "dependsOn": [
+                "DeploymentTestCommand"
+            ],
+            "problemMatcher": [],
+            "command": "Start-Process",
+            "args": ["-verb","RunAs","-FilePath","powershell","-ArgumentList","-NoExit -ExecutionPolicy Bypass"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "DeploymentTestCommand",
+            "type": "shell",
+            "command": "Set-Clipboard 'powershell.exe -ExecutionPolicy Bypass -Command \\\"& { & ''${fileDirname}\\Deploy-Application.ps1'' -DeploymentType Install; Exit $LastExitCode }\\\"'; Exit"
+        },
+        {
             "label": "Configure Deploy Application",
             "type": "shell",
             "command": "powershell -NoExit -NoProfile -ExecutionPolicy Bypass ${cwd}/.vscode/tasks.ps1",
