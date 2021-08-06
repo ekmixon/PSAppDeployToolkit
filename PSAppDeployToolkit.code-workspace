@@ -1,0 +1,59 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"Modules/oh-my-posh":true,
+			"Modules/PackageManagement":true,
+			"Modules/Plaster":true,
+			"Modules/posh-git":true,
+			"Modules/Posh-SSH":true,
+			"Modules/PSScriptAnalyzer":true,
+			"Modules/PSSudo":true,
+			"Modules/WindowsCompatibility":true,
+			"Scripts":true,
+			"**/*.exe": true,
+			"**/*.msixbundle":true,
+			"**/*.appxbundle":true
+		},
+		"powershell.codeFormatting.autoCorrectAliases": true,
+		"powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+		"powershell.codeFormatting.useCorrectCasing": true,
+		"powershell.codeFormatting.preset": "Allman",
+		"powershell.codeFormatting.whitespaceBetweenParameters": true,
+		"editor.tabSize": 4,
+		"diffEditor.ignoreTrimWhitespace": false,
+		"editor.renderWhitespace": "all",
+		"files.trimTrailingWhitespace": true,
+		"powershell.enableProfileLoading": true,
+		"terminal.integrated.cwd": "${fileDirname}",
+		"terminal.integrated.profiles.windows": {
+			"PowerShell NoProfile": {
+				"source":"PowerShell",
+				"args": ["-NoProfile","-NoLogo","-ExecutionPolicy","RemoteSigned"]
+			},
+			"PowerShell Posh": {
+				"source":"PowerShell",
+				"args": ["-NoLogo","-NoExit","-ExecutionPolicy","RemoteSigned;","Set-Theme ys"]
+			},
+			"Git Bash": null,
+			"Command Prompt": null,
+		},
+		"terminal.integrated.defaultProfile.windows": "PowerShell Posh"
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "PowerShell: Launch Current File",
+				"type": "PowerShell",
+				"request": "launch",
+				"script": "${file}",
+				"cwd": "${file}"
+			}
+		]
+	}
+}
