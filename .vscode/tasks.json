@@ -26,10 +26,10 @@
     },
     "tasks": [
         {
-            "label": "Test Deployment",
+            "label": "Deployment Debugging",
             "type": "shell",
             "dependsOn": [
-                "DeploymentTestCommand"
+                "SetClipboard"
             ],
             "problemMatcher": [],
             "command": "Start-Process",
@@ -40,9 +40,9 @@
             }
         },
         {
-            "label": "DeploymentTestCommand",
+            "label": "SetClipboard",
             "type": "shell",
-            "command": "Set-Clipboard 'powershell.exe -ExecutionPolicy Bypass -Command \\\"& { & ''${fileDirname}\\Deploy-Application.ps1'' -DeploymentType Install; Exit $LastExitCode }\\\"'; Exit"
+            "command": "Set-Clipboard '& ''${fileDirname}\\Deploy-Application.ps1'' -DeploymentType Install'; Exit"
         },
         {
             "label": "Configure Deploy Application",
