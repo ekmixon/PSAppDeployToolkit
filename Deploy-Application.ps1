@@ -61,20 +61,19 @@ Try {
 	##* VARIABLE DECLARATION
 	##*===============================================
 	## Variables: Application
-	[string]$appVendor = 'Igor Pavlov'
-	[string]$appName = '7-Zip'
-	[string]$appVersion = '19.00.00.0'
-	[string]$appArch = 'x64'
+	[string]$appVendor = 'Zoom'
+	[string]$appName = 'Zoom'
+	[string]$appVersion = ''
+	[string]$appArch = ''
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = '19/06/2021'
-	[string]$appScriptAuthor = 'gerkec'
+	[string]$appScriptDate = 'XX/XX/20XX'
+	[string]$appScriptAuthor = '<author name>'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
 	[string]$installName = ''
 	[string]$installTitle = $appName
-
 
 	##* Do not modify section below
 	#region DoNotModify
@@ -111,14 +110,23 @@ Try {
 	##* END VARIABLE DECLARATION
 	##*===============================================
 
+	## Organisation Template Variables, uncomment what you need.
+	[string]$appInstall = "ZoomInstallerFull.msi"
+	##*ORG*## [string]$appUnInstall = "C:\Program Files\APP\uninstall.exe if GUID not available"
+	##*ORG*## [string]$appGUID = "{00000000-0000-0000-0000-000000000000}"
+	[string]$appProcess = "Zoom.exe"
+	[string]$appShortcut = "Zoom.lnk"
+	[string]$appDesktopShortcut = "$envCommonDesktop\$appShortcut"
+	[string]$appStartMenuShortcut = "$envCommonStartMenuPrograms\$appShortcut"
+
 	If ($deploymentType -ine 'Uninstall' -and $deploymentType -ine 'Repair') {
 		##*===============================================
 		##* PRE-INSTALLATION
 		##*===============================================
 		[string]$installPhase = 'Pre-Installation'
 
-		## Show Welcome Message, close 7zFM if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
-		#Show-InstallationWelcome -CloseApps '7zFM' -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
+		## Show Welcome Message, close application if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
+		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -138,7 +146,8 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-		Execute-MSI -Action Install -Path '7z1900-x64.msi' -Parameters '/qn'
+		##*ORG*##Execute-MSI -Action Install -Path "$appInstall" -Parameters '/qn'
+		##*ORG*##Execute-Process -Path "$appInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -146,9 +155,14 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
+		##*ORG*##If ( Test-Path -Path "$appDesktopShortcut" ){
+		##*ORG*##Remove-Item -Path "$appDesktopShortcut"
+		##*ORG*##}
+
+		##*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
 
 		## Display a message at the end of the install
-		#If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
+		If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
 	}
 	ElseIf ($deploymentType -ieq 'Uninstall')
 	{
@@ -157,8 +171,8 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Uninstallation'
 
-		## Show Welcome Message, close 7zFM with a 60 second countdown before automatically closing
-		#Show-InstallationWelcome -CloseApps '7zFM' -CloseAppsCountdown 60
+		## Show Welcome Message, close application with a 60 second countdown before automatically closing
+		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -178,7 +192,8 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-		Execute-MSI -Action Uninstall -Path '{23170F69-40C1-2702-1900-000001000000}'
+		##*ORG*##Execute-MSI -Action Uninstall -Path "$appGUID"
+		##*ORG*##Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-UNINSTALLATION
@@ -186,7 +201,7 @@ Try {
 		[string]$installPhase = 'Post-Uninstallation'
 
 		## <Perform Post-Uninstallation tasks here>
-
+		##*ORG*##Remove-Item -Path "$appStartMenuShortcut" -Force
 
 	}
 	ElseIf ($deploymentType -ieq 'Repair')
@@ -196,10 +211,16 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Repair'
 
+		## Show Welcome Message, close the application with a 60 second countdown before automatically closing
+		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
+
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
 
 		## <Perform Pre-Repair tasks here>
+		##*ORG*##If ( Test-Path -Path "$appUnInstall" ){
+		##*ORG*##	Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		##*ORG*##}
 
 		##*===============================================
 		##* REPAIR
@@ -212,6 +233,8 @@ Try {
 			Execute-MSI @ExecuteDefaultMSISplat
 		}
 		# <Perform Repair tasks here>
+		##*ORG*##Execute-MSI -Action Repair -Path "$appGUID" -Parameters '/QN'
+		##*ORG*##Execute-Process -Path $appInstall -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-REPAIR
@@ -219,7 +242,11 @@ Try {
 		[string]$installPhase = 'Post-Repair'
 
 		## <Perform Post-Repair tasks here>
-		Execute-MSI -Action Repair -Path '{23170F69-40C1-2702-1900-000001000000}' -Parameters '/QN'
+		##*ORG*##If ( Test-Path -Path "$appDesktopShortcut" ){
+		##*ORG*##Remove-Item -Path "$appDesktopShortcut"
+		##*ORG*##}
+
+		##*ORG*####*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
 
     }
 	##*===============================================
