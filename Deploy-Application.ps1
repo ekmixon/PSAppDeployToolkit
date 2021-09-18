@@ -61,15 +61,15 @@ Try {
 	##* VARIABLE DECLARATION
 	##*===============================================
 	## Variables: Application
-	[string]$appVendor = 'Zoom'
-	[string]$appName = 'Zoom'
-	[string]$appVersion = ''
-	[string]$appArch = ''
+	[string]$appVendor = 'Adobe'
+	[string]$appName = 'Acrobat Reader DC'
+	[string]$appVersion = '2021.005.20048'
+	[string]$appArch = 'x86'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = 'XX/XX/20XX'
-	[string]$appScriptAuthor = '<author name>'
+	[string]$appScriptDate = '19/06/2021'
+	[string]$appScriptAuthor = 'gerkec'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
 	[string]$installName = ''
@@ -110,23 +110,14 @@ Try {
 	##* END VARIABLE DECLARATION
 	##*===============================================
 
-	## Organisation Template Variables, uncomment what you need.
-	[string]$appInstall = "ZoomInstallerFull.msi"
-	##*ORG*## [string]$appUnInstall = "C:\Program Files\APP\uninstall.exe if GUID not available"
-	##*ORG*## [string]$appGUID = "{00000000-0000-0000-0000-000000000000}"
-	[string]$appProcess = "Zoom.exe"
-	[string]$appShortcut = "Zoom.lnk"
-	[string]$appDesktopShortcut = "$envCommonDesktop\$appShortcut"
-	[string]$appStartMenuShortcut = "$envCommonStartMenuPrograms\$appShortcut"
-
 	If ($deploymentType -ine 'Uninstall' -and $deploymentType -ine 'Repair') {
 		##*===============================================
 		##* PRE-INSTALLATION
 		##*===============================================
 		[string]$installPhase = 'Pre-Installation'
 
-		## Show Welcome Message, close application if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
-		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
+		## Show Welcome Message, close apps if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
+		Show-InstallationWelcome -CloseApps 'iexplore,AcroRd32,cidaemon' -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -146,8 +137,10 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-		##*ORG*##Execute-MSI -Action Install -Path "$appInstall" -Parameters '/qn'
-		##*ORG*##Execute-Process -Path "$appInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		# Install the base MSI and apply a transform
+	    Execute-MSI -Action Install -Path 'AcroRead.msi' -Transform 'AcroRead.mst'
+		# Install the patch
+	    Execute-MSI -Action Patch -Path 'AcroRdrDCUpd2100520060.msp'
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -155,14 +148,10 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
-		##*ORG*##If ( Test-Path -Path "$appDesktopShortcut" ){
-		##*ORG*##Remove-Item -Path "$appDesktopShortcut"
-		##*ORG*##}
-
-		##*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
+		#Execute-MSI -Action Install -Path "FontPack2100120135_XtdAlf_Lang_DC.msi"
 
 		## Display a message at the end of the install
-		If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
+		#If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'Acrobat Reader DC is now installed.' -ButtonRightText 'OK' -Icon Information -NoWait }
 	}
 	ElseIf ($deploymentType -ieq 'Uninstall')
 	{
@@ -171,8 +160,8 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Uninstallation'
 
-		## Show Welcome Message, close application with a 60 second countdown before automatically closing
-		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
+		## Show Welcome Message, close apps with a 60 second countdown before automatically closing
+		Show-InstallationWelcome -CloseApps 'iexplore,AcroRd32,cidaemon' -CloseAppsCountdown 60
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -192,8 +181,7 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-		##*ORG*##Execute-MSI -Action Uninstall -Path "$appGUID"
-		##*ORG*##Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		Execute-MSI -Action Uninstall -Path '{AC76BA86-7AD7-1033-7B44-AC0F074E4100}'
 
 		##*===============================================
 		##* POST-UNINSTALLATION
@@ -201,7 +189,7 @@ Try {
 		[string]$installPhase = 'Post-Uninstallation'
 
 		## <Perform Post-Uninstallation tasks here>
-		##*ORG*##Remove-Item -Path "$appStartMenuShortcut" -Force
+
 
 	}
 	ElseIf ($deploymentType -ieq 'Repair')
@@ -211,16 +199,10 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Repair'
 
-		## Show Welcome Message, close the application with a 60 second countdown before automatically closing
-		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
-
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
 
 		## <Perform Pre-Repair tasks here>
-		##*ORG*##If ( Test-Path -Path "$appUnInstall" ){
-		##*ORG*##	Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
-		##*ORG*##}
 
 		##*===============================================
 		##* REPAIR
@@ -233,8 +215,7 @@ Try {
 			Execute-MSI @ExecuteDefaultMSISplat
 		}
 		# <Perform Repair tasks here>
-		##*ORG*##Execute-MSI -Action Repair -Path "$appGUID" -Parameters '/QN'
-		##*ORG*##Execute-Process -Path $appInstall -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		Execute-MSI -Action Repair -Path '{AC76BA86-7AD7-1033-7B44-AC0F074E4100}' -Parameters '/QN'
 
 		##*===============================================
 		##* POST-REPAIR
@@ -242,11 +223,6 @@ Try {
 		[string]$installPhase = 'Post-Repair'
 
 		## <Perform Post-Repair tasks here>
-		##*ORG*##If ( Test-Path -Path "$appDesktopShortcut" ){
-		##*ORG*##Remove-Item -Path "$appDesktopShortcut"
-		##*ORG*##}
-
-		##*ORG*####*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
 
     }
 	##*===============================================
