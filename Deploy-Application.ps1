@@ -61,15 +61,15 @@ Try {
 	##* VARIABLE DECLARATION
 	##*===============================================
 	## Variables: Application
-	[string]$appVendor = 'Python.org'
-	[string]$appName = 'Python'
-	[string]$appVersion = '3.96'
+	[string]$appVendor = 'Cisco'
+	[string]$appName = 'Webex'
+	[string]$appVersion = '41.8.0.19732'
 	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = '19/06/2021'
-	[string]$appScriptAuthor = 'gerkec'
+	[string]$appScriptDate = '25/08/2021'
+	[string]$appScriptAuthor = '<author name>'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
 	[string]$installName = ''
@@ -110,14 +110,23 @@ Try {
 	##* END VARIABLE DECLARATION
 	##*===============================================
 
+	## Organisation Template Variables, uncomment what you need.
+	[string]$appInstall = "Webex.msi"
+	##*ORG*## [string]$appUnInstall = "C:\Program Files\APP\uninstall.exe if GUID not available"
+	[string]$appGUID = "{46D1E0D1-F90A-563F-80C9-432D0398D744}"
+	[string]$appProcess = "Webex.exe"
+	[string]$appShortcut = "Webex.lnk"
+	[string]$appDesktopShortcut = "$envCommonDesktop\$appShortcut"
+	[string]$appStartMenuShortcut = "$envCommonStartMenuPrograms\$appShortcut"
+
 	If ($deploymentType -ine 'Uninstall' -and $deploymentType -ine 'Repair') {
 		##*===============================================
 		##* PRE-INSTALLATION
 		##*===============================================
 		[string]$installPhase = 'Pre-Installation'
 
-		## Show Welcome Message, close apps if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
-		#Show-InstallationWelcome -CloseApps 'python' -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
+		## Show Welcome Message, close application if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
+		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -137,7 +146,8 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-		Execute-Process -Path 'python-3.9.6-amd64.exe' -Parameters "/quiet InstallAllUsers=1 PrependPath=1 Include_test=0" -WindowStyle 'Hidden'
+		Execute-MSI -Action Install -Path "$appInstall" -Parameters '/qn ACCEPT_EULA=TRUE ALLUSERS=1 AUTOSTART_WITH_WINDOWS=true OI=0 OC=0 AUTOOC=0 OFFICE=0 IE=0 SKYPE=0 MSN=0 HIDEWBX=1 HIDEPRM=1 HIDEPCN=1'
+		##*ORG*##Execute-Process -Path "$appInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -145,9 +155,14 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
+		If ( Test-Path -Path "$appDesktopShortcut" ){
+			Remove-Item -Path "$appDesktopShortcut"
+		}
+
+		##*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
 
 		## Display a message at the end of the install
-		#If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
+		##If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
 	}
 	ElseIf ($deploymentType -ieq 'Uninstall')
 	{
@@ -156,8 +171,8 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Uninstallation'
 
-		## Show Welcome Message, close Internet Explorer with a 60 second countdown before automatically closing
-		#Show-InstallationWelcome -CloseApps 'python' -CloseAppsCountdown 60
+		## Show Welcome Message, close application with a 60 second countdown before automatically closing
+		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -177,16 +192,8 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-		Execute-MSI -Action Uninstall -Path '{511119D2-41C4-48E1-A3DA-0A6A1E68AC76}'
-		Execute-MSI -Action Uninstall -Path '{69BCB7EC-54AF-47F2-A891-D335CE44A530}'
-		Execute-MSI -Action Uninstall -Path '{7C56D977-225C-4EBA-8308-E47DF9FA867F}'
-		Execute-MSI -Action Uninstall -Path '{9BE9E7F0-F9F1-487B-A2FC-790CD2898388}'
-		Execute-MSI -Action Uninstall -Path '{C4B7FF79-1195-436F-AA85-28EE995151B7}'
-		Execute-MSI -Action Uninstall -Path '{D6580352-5B95-49A9-B2F3-313D12D13968}'
-		Execute-MSI -Action Uninstall -Path '{EC27BF73-AB7E-4867-9EEC-3AD456006835}'
-		Execute-MSI -Action Uninstall -Path '{3CC89AD9-6FF2-40BE-ADF4-8ADDD3030FCE}'
-		Execute-MSI -Action Uninstall -Path '{2994270E-FE74-49E5-98BB-E65F5F0EC304}'
-		Execute-MSI -Action Uninstall -Path '{4DD10049-CC97-48AE-BE76-4CB6E3111F7B}'
+		Execute-MSI -Action Uninstall -Path "$appGUID"
+		##*ORG*##Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-UNINSTALLATION
@@ -194,7 +201,7 @@ Try {
 		[string]$installPhase = 'Post-Uninstallation'
 
 		## <Perform Post-Uninstallation tasks here>
-
+		##*ORG*##Remove-Item -Path "$appStartMenuShortcut" -Force
 
 	}
 	ElseIf ($deploymentType -ieq 'Repair')
@@ -204,10 +211,16 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Repair'
 
+		## Show Welcome Message, close the application with a 60 second countdown before automatically closing
+		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
+
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
 
 		## <Perform Pre-Repair tasks here>
+		##*ORG*##If ( Test-Path -Path "$appUnInstall" ){
+		##*ORG*##	Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		##*ORG*##}
 
 		##*===============================================
 		##* REPAIR
@@ -220,6 +233,8 @@ Try {
 			Execute-MSI @ExecuteDefaultMSISplat
 		}
 		# <Perform Repair tasks here>
+		Execute-MSI -Action Repair -Path "$appGUID" -Parameters '/QN'
+		##*ORG*##Execute-Process -Path $appInstall -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-REPAIR
@@ -227,16 +242,11 @@ Try {
 		[string]$installPhase = 'Post-Repair'
 
 		## <Perform Post-Repair tasks here>
-		Execute-MSI -Action Repair -Path '{511119D2-41C4-48E1-A3DA-0A6A1E68AC76}' -Parameters '/QN'
-		Execute-MSI -Action Repair -Path '{69BCB7EC-54AF-47F2-A891-D335CE44A530}' -Parameters '/QN'
-		Execute-MSI -Action Repair -Path '{7C56D977-225C-4EBA-8308-E47DF9FA867F}' -Parameters '/QN'
-		Execute-MSI -Action Repair -Path '{9BE9E7F0-F9F1-487B-A2FC-790CD2898388}' -Parameters '/QN'
-		Execute-MSI -Action Repair -Path '{C4B7FF79-1195-436F-AA85-28EE995151B7}' -Parameters '/QN'
-		Execute-MSI -Action Repair -Path '{D6580352-5B95-49A9-B2F3-313D12D13968}' -Parameters '/QN'
-		Execute-MSI -Action Repair -Path '{EC27BF73-AB7E-4867-9EEC-3AD456006835}' -Parameters '/QN'
-		Execute-MSI -Action Repair -Path '{3CC89AD9-6FF2-40BE-ADF4-8ADDD3030FCE}' -Parameters '/QN'
-		Execute-MSI -Action Repair -Path '{2994270E-FE74-49E5-98BB-E65F5F0EC304}' -Parameters '/QN'
-		Execute-MSI -Action Repair -Path '{4DD10049-CC97-48AE-BE76-4CB6E3111F7B}' -Parameters '/QN'
+		If ( Test-Path -Path "$appDesktopShortcut" ){
+			Remove-Item -Path "$appDesktopShortcut"
+		}
+
+		##*ORG*####*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
 
     }
 	##*===============================================
