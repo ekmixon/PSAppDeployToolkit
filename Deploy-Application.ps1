@@ -61,14 +61,14 @@ Try {
 	##* VARIABLE DECLARATION
 	##*===============================================
 	## Variables: Application
-	[string]$appVendor = 'Git'
-	[string]$appName = 'Git for Windows'
-	[string]$appVersion = '2.32.0.2'
+	[string]$appVendor = 'Filezilla'
+	[string]$appName = 'Filezilla FTP Client'
+	[string]$appVersion = '3.55'
 	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = '11/08/2021'
+	[string]$appScriptDate = '10/07/2021'
 	[string]$appScriptAuthor = 'gerkec'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
@@ -109,10 +109,6 @@ Try {
 	##*===============================================
 	##* END VARIABLE DECLARATION
 	##*===============================================
-	[string]$appInstall = 'Git-2.32.0.2-64-bit.exe'
-	[string]$appUnInstall = 'C:\Program Files\Git\unins000.exe'
-	[string]$appProcess = 'git'
-	[string]$appDesktopIcon = 'C:\Users\Public\Desktop\Git.lnk'
 
 	If ($deploymentType -ine 'Uninstall' -and $deploymentType -ine 'Repair') {
 		##*===============================================
@@ -121,7 +117,7 @@ Try {
 		[string]$installPhase = 'Pre-Installation'
 
 		## Show Welcome Message, close apps if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
-		#Show-InstallationWelcome -CloseApps "$appProcess" -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
+		Show-InstallationWelcome -CloseApps 'filezilla' -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -141,7 +137,7 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-		Execute-Process -Path $appInstall -Parameters "/VERYSILENT /NORESTART /NOCANCEL /SP- /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /COMPONENTS='icons,ext\reg\shellhere,assoc,assoc_sh'" -WindowStyle 'Hidden'
+		Execute-Process -Path 'FileZilla_3.55.0_win64-setup.exe' -Parameters "/S" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -149,7 +145,7 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
-		#Remove-Item -Path "$appDesktopIcon"
+		#Remove-Item -Path "C:\Users\Public\Desktop\Npgsql.lnk"
 
 		## Display a message at the end of the install
 		#If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
@@ -162,7 +158,7 @@ Try {
 		[string]$installPhase = 'Pre-Uninstallation'
 
 		## Show Welcome Message, close apps with a 60 second countdown before automatically closing
-		# Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
+		Show-InstallationWelcome -CloseApps 'filezilla' -CloseAppsCountdown 60
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -182,7 +178,7 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-		Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		Execute-Process -Path 'C:\Program Files\FileZilla FTP Client\uninstall.exe' -Parameters "/S" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-UNINSTALLATION
@@ -204,8 +200,8 @@ Try {
 		Show-InstallationProgress
 
 		## <Perform Pre-Repair tasks here>
-		If ( Test-Path -Path "$appUnInstall" ){
-			Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		If ( Test-Path -Path 'C:\Program Files\FileZilla FTP Client\uninstall.exe' ){
+			Execute-Process -Path 'C:\Program Files\FileZilla FTP Client\uninstall.exe' -Parameters "/S" -WindowStyle 'Hidden'
 		}
 
 		##*===============================================
@@ -219,7 +215,8 @@ Try {
 			Execute-MSI @ExecuteDefaultMSISplat
 		}
 		# <Perform Repair tasks here>
-		Execute-Process -Path "$appUnInstall" -Parameters "/VERYSILENT /NORESTART /NOCANCEL /SP- /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /COMPONENTS='icons,ext\reg\shellhere,assoc,assoc_sh'" -WindowStyle 'Hidden'
+		Execute-Process -Path 'FileZilla_3.55.0_win64-setup.exe' -Parameters "/S" -WindowStyle 'Hidden'
+
 
 		##*===============================================
 		##* POST-REPAIR
@@ -227,7 +224,9 @@ Try {
 		[string]$installPhase = 'Post-Repair'
 
 		## <Perform Post-Repair tasks here>
-		#Remove-Item -Path "$appDesktopIcon"
+		If ( Test-Path -Path 'C:\Users\Public\Desktop\Filezilla.lnk' ){
+			Remove-Item -Path "C:\Users\Public\Desktop\Filezilla.lnk"
+		}
     }
 	##*===============================================
 	##* END SCRIPT BODY
