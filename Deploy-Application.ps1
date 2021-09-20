@@ -62,9 +62,9 @@ Try {
 	##*===============================================
 	## Variables: Application
 	[string]$appVendor = 'Adobe'
-	[string]$appName = 'Acrobat Reader DC'
-	[string]$appVersion = '2021.005.20048'
-	[string]$appArch = 'x86'
+	[string]$appName = 'Creative Desktop'
+	[string]$appVersion = '5.4.5.550'
+	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
@@ -73,7 +73,7 @@ Try {
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
 	[string]$installName = ''
-	[string]$installTitle = $appName
+	[string]$installTitle = ''
 
 	##* Do not modify section below
 	#region DoNotModify
@@ -137,10 +137,7 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-		# Install the base MSI and apply a transform
-	    Execute-MSI -Action Install -Path 'AcroRead.msi' -Transform 'AcroRead.mst'
-		# Install the patch
-	    Execute-MSI -Action Patch -Path 'AcroRdrDCUpd2100520060.msp'
+		Execute-Process -Path 'setup.exe' -Parameters "--silent" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -148,10 +145,10 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
-		#Execute-MSI -Action Install -Path "FontPack2100120135_XtdAlf_Lang_DC.msi"
+		Remove-Item -Path "C:\Users\Public\Desktop\Adobe Creative Cloud.lnk"
 
 		## Display a message at the end of the install
-		#If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'Acrobat Reader DC is now installed.' -ButtonRightText 'OK' -Icon Information -NoWait }
+		If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can now sign in to Creative Cloud Desktop and install the applications you are subscribed too.' -ButtonRightText 'OK' -Icon Information -NoWait }
 	}
 	ElseIf ($deploymentType -ieq 'Uninstall')
 	{
@@ -181,7 +178,7 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-		Execute-MSI -Action Uninstall -Path '{AC76BA86-7AD7-1033-7B44-AC0F074E4100}'
+		Execute-Process -Path 'C:\Program Files (x86)\Adobe\Adobe Creative Cloud\Utils\Creative Cloud Uninstaller.exe' -Parameters "-uninstall" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-UNINSTALLATION
@@ -189,7 +186,7 @@ Try {
 		[string]$installPhase = 'Post-Uninstallation'
 
 		## <Perform Post-Uninstallation tasks here>
-
+		Remove-Item -Path "C:\Users\Public\Desktop\Adobe Creative Cloud.lnk"
 
 	}
 	ElseIf ($deploymentType -ieq 'Repair')
@@ -215,7 +212,7 @@ Try {
 			Execute-MSI @ExecuteDefaultMSISplat
 		}
 		# <Perform Repair tasks here>
-		Execute-MSI -Action Repair -Path '{AC76BA86-7AD7-1033-7B44-AC0F074E4100}' -Parameters '/QN'
+		Execute-Process -Path 'C:\Program Files (x86)\Adobe\Adobe Creative Cloud\Utils\Creative Cloud Uninstaller.exe' -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-REPAIR
@@ -223,7 +220,7 @@ Try {
 		[string]$installPhase = 'Post-Repair'
 
 		## <Perform Post-Repair tasks here>
-
+		Remove-Item -Path "C:\Users\Public\Desktop\Adobe Creative Cloud.lnk"
     }
 	##*===============================================
 	##* END SCRIPT BODY
