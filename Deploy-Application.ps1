@@ -61,15 +61,15 @@ Try {
 	##* VARIABLE DECLARATION
 	##*===============================================
 	## Variables: Application
-	[string]$appVendor = ''
-	[string]$appName = ''
-	[string]$appVersion = ''
-	[string]$appArch = ''
+	[string]$appVendor = 'Git'
+	[string]$appName = 'Git for Windows'
+	[string]$appVersion = '2.32.0.2'
+	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = 'XX/XX/20XX'
-	[string]$appScriptAuthor = '<author name>'
+	[string]$appScriptDate = '11/08/2021'
+	[string]$appScriptAuthor = 'gerkec'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
 	[string]$installName = ''
@@ -109,15 +109,10 @@ Try {
 	##*===============================================
 	##* END VARIABLE DECLARATION
 	##*===============================================
-
-	## Organisation Template Variables, uncomment what you need.
-	##*ORG*## [string]$appInstall = "APP.exe or APP.msi"
-	##*ORG*## [string]$appUnInstall = "C:\Program Files\APP\uninstall.exe if GUID not available"
-	##*ORG*## [string]$appGUID = "{00000000-0000-0000-0000-000000000000}"
-	##*ORG*## [string]$appProcess = "APP process.exe"
-	[string]$appShortcut = "APP.lnk"
-	[string]$appDesktopShortcut = "$envCommonDesktop\$appShortcut"
-	[string]$appStartMenuShortcut = "$envCommonStartMenuPrograms\$appShortcut"
+	[string]$appInstall = 'Git-2.32.0.2-64-bit.exe'
+	[string]$appUnInstall = 'C:\Program Files\Git\unins000.exe'
+	[string]$appProcess = 'git'
+	[string]$appDesktopIcon = 'C:\Users\Public\Desktop\Git.lnk'
 
 	If ($deploymentType -ine 'Uninstall' -and $deploymentType -ine 'Repair') {
 		##*===============================================
@@ -125,8 +120,8 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Installation'
 
-		## Show Welcome Message, close application if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
-		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
+		## Show Welcome Message, close apps if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
+		#Show-InstallationWelcome -CloseApps "$appProcess" -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -146,8 +141,7 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-		##*ORG*##Execute-MSI -Action Install -Path "$appInstall" -Parameters '/qn'
-		##*ORG*##Execute-Process -Path "$appInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		Execute-Process -Path $appInstall -Parameters "/VERYSILENT /NORESTART /NOCANCEL /SP- /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /COMPONENTS='icons,ext\reg\shellhere,assoc,assoc_sh'" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -155,14 +149,10 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
-		##*ORG*##If ( Test-Path -Path "$appDesktopShortcut" ){
-		##*ORG*##Remove-Item -Path "$appDesktopShortcut"
-		##*ORG*##}
-
-		##*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
+		#Remove-Item -Path "$appDesktopIcon"
 
 		## Display a message at the end of the install
-		If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
+		#If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
 	}
 	ElseIf ($deploymentType -ieq 'Uninstall')
 	{
@@ -171,8 +161,8 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Uninstallation'
 
-		## Show Welcome Message, close application with a 60 second countdown before automatically closing
-		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
+		## Show Welcome Message, close apps with a 60 second countdown before automatically closing
+		# Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -192,8 +182,7 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-		##*ORG*##Execute-MSI -Action Uninstall -Path "$appGUID"
-		##*ORG*##Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-UNINSTALLATION
@@ -201,7 +190,7 @@ Try {
 		[string]$installPhase = 'Post-Uninstallation'
 
 		## <Perform Post-Uninstallation tasks here>
-		##*ORG*##Remove-Item -Path "$appStartMenuShortcut" -Force
+
 
 	}
 	ElseIf ($deploymentType -ieq 'Repair')
@@ -211,16 +200,13 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Repair'
 
-		## Show Welcome Message, close the application with a 60 second countdown before automatically closing
-		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
-
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
 
 		## <Perform Pre-Repair tasks here>
-		##*ORG*##If ( Test-Path -Path "$appUnInstall" ){
-		##*ORG*##	Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
-		##*ORG*##}
+		If ( Test-Path -Path "$appUnInstall" ){
+			Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		}
 
 		##*===============================================
 		##* REPAIR
@@ -233,8 +219,7 @@ Try {
 			Execute-MSI @ExecuteDefaultMSISplat
 		}
 		# <Perform Repair tasks here>
-		##*ORG*##Execute-MSI -Action Repair -Path "$appGUID" -Parameters '/QN'
-		##*ORG*##Execute-Process -Path $appInstall -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		Execute-Process -Path "$appUnInstall" -Parameters "/VERYSILENT /NORESTART /NOCANCEL /SP- /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /COMPONENTS='icons,ext\reg\shellhere,assoc,assoc_sh'" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-REPAIR
@@ -242,12 +227,7 @@ Try {
 		[string]$installPhase = 'Post-Repair'
 
 		## <Perform Post-Repair tasks here>
-		##*ORG*##If ( Test-Path -Path "$appDesktopShortcut" ){
-		##*ORG*##Remove-Item -Path "$appDesktopShortcut"
-		##*ORG*##}
-
-		##*ORG*####*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
-
+		#Remove-Item -Path "$appDesktopIcon"
     }
 	##*===============================================
 	##* END SCRIPT BODY
