@@ -61,14 +61,14 @@ Try {
 	##* VARIABLE DECLARATION
 	##*===============================================
 	## Variables: Application
-	[string]$appVendor = 'Filezilla'
-	[string]$appName = 'Filezilla FTP Client'
-	[string]$appVersion = '3.55'
+	[string]$appVendor = 'Python.org'
+	[string]$appName = 'Python'
+	[string]$appVersion = '3.96'
 	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = '10/07/2021'
+	[string]$appScriptDate = '19/06/2021'
 	[string]$appScriptAuthor = 'gerkec'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
@@ -117,7 +117,7 @@ Try {
 		[string]$installPhase = 'Pre-Installation'
 
 		## Show Welcome Message, close apps if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
-		Show-InstallationWelcome -CloseApps 'filezilla' -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
+		#Show-InstallationWelcome -CloseApps 'python' -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -137,7 +137,7 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-		Execute-Process -Path 'FileZilla_3.55.0_win64-setup.exe' -Parameters "/S" -WindowStyle 'Hidden'
+		Execute-Process -Path 'python-3.9.6-amd64.exe' -Parameters "/quiet InstallAllUsers=1 PrependPath=1 Include_test=0" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -145,7 +145,6 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
-		#Remove-Item -Path "C:\Users\Public\Desktop\Npgsql.lnk"
 
 		## Display a message at the end of the install
 		#If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
@@ -157,8 +156,8 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Uninstallation'
 
-		## Show Welcome Message, close apps with a 60 second countdown before automatically closing
-		Show-InstallationWelcome -CloseApps 'filezilla' -CloseAppsCountdown 60
+		## Show Welcome Message, close Internet Explorer with a 60 second countdown before automatically closing
+		#Show-InstallationWelcome -CloseApps 'python' -CloseAppsCountdown 60
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -178,7 +177,16 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-		Execute-Process -Path 'C:\Program Files\FileZilla FTP Client\uninstall.exe' -Parameters "/S" -WindowStyle 'Hidden'
+		Execute-MSI -Action Uninstall -Path '{511119D2-41C4-48E1-A3DA-0A6A1E68AC76}'
+		Execute-MSI -Action Uninstall -Path '{69BCB7EC-54AF-47F2-A891-D335CE44A530}'
+		Execute-MSI -Action Uninstall -Path '{7C56D977-225C-4EBA-8308-E47DF9FA867F}'
+		Execute-MSI -Action Uninstall -Path '{9BE9E7F0-F9F1-487B-A2FC-790CD2898388}'
+		Execute-MSI -Action Uninstall -Path '{C4B7FF79-1195-436F-AA85-28EE995151B7}'
+		Execute-MSI -Action Uninstall -Path '{D6580352-5B95-49A9-B2F3-313D12D13968}'
+		Execute-MSI -Action Uninstall -Path '{EC27BF73-AB7E-4867-9EEC-3AD456006835}'
+		Execute-MSI -Action Uninstall -Path '{3CC89AD9-6FF2-40BE-ADF4-8ADDD3030FCE}'
+		Execute-MSI -Action Uninstall -Path '{2994270E-FE74-49E5-98BB-E65F5F0EC304}'
+		Execute-MSI -Action Uninstall -Path '{4DD10049-CC97-48AE-BE76-4CB6E3111F7B}'
 
 		##*===============================================
 		##* POST-UNINSTALLATION
@@ -200,9 +208,6 @@ Try {
 		Show-InstallationProgress
 
 		## <Perform Pre-Repair tasks here>
-		If ( Test-Path -Path 'C:\Program Files\FileZilla FTP Client\uninstall.exe' ){
-			Execute-Process -Path 'C:\Program Files\FileZilla FTP Client\uninstall.exe' -Parameters "/S" -WindowStyle 'Hidden'
-		}
 
 		##*===============================================
 		##* REPAIR
@@ -215,8 +220,6 @@ Try {
 			Execute-MSI @ExecuteDefaultMSISplat
 		}
 		# <Perform Repair tasks here>
-		Execute-Process -Path 'FileZilla_3.55.0_win64-setup.exe' -Parameters "/S" -WindowStyle 'Hidden'
-
 
 		##*===============================================
 		##* POST-REPAIR
@@ -224,9 +227,17 @@ Try {
 		[string]$installPhase = 'Post-Repair'
 
 		## <Perform Post-Repair tasks here>
-		If ( Test-Path -Path 'C:\Users\Public\Desktop\Filezilla.lnk' ){
-			Remove-Item -Path "C:\Users\Public\Desktop\Filezilla.lnk"
-		}
+		Execute-MSI -Action Repair -Path '{511119D2-41C4-48E1-A3DA-0A6A1E68AC76}' -Parameters '/QN'
+		Execute-MSI -Action Repair -Path '{69BCB7EC-54AF-47F2-A891-D335CE44A530}' -Parameters '/QN'
+		Execute-MSI -Action Repair -Path '{7C56D977-225C-4EBA-8308-E47DF9FA867F}' -Parameters '/QN'
+		Execute-MSI -Action Repair -Path '{9BE9E7F0-F9F1-487B-A2FC-790CD2898388}' -Parameters '/QN'
+		Execute-MSI -Action Repair -Path '{C4B7FF79-1195-436F-AA85-28EE995151B7}' -Parameters '/QN'
+		Execute-MSI -Action Repair -Path '{D6580352-5B95-49A9-B2F3-313D12D13968}' -Parameters '/QN'
+		Execute-MSI -Action Repair -Path '{EC27BF73-AB7E-4867-9EEC-3AD456006835}' -Parameters '/QN'
+		Execute-MSI -Action Repair -Path '{3CC89AD9-6FF2-40BE-ADF4-8ADDD3030FCE}' -Parameters '/QN'
+		Execute-MSI -Action Repair -Path '{2994270E-FE74-49E5-98BB-E65F5F0EC304}' -Parameters '/QN'
+		Execute-MSI -Action Repair -Path '{4DD10049-CC97-48AE-BE76-4CB6E3111F7B}' -Parameters '/QN'
+
     }
 	##*===============================================
 	##* END SCRIPT BODY
