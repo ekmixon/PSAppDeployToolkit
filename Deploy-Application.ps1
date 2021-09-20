@@ -61,19 +61,19 @@ Try {
 	##* VARIABLE DECLARATION
 	##*===============================================
 	## Variables: Application
-	[string]$appVendor = 'Adobe'
-	[string]$appName = 'Creative Desktop'
-	[string]$appVersion = '5.4.5.550'
+	[string]$appVendor = 'VLC media player'
+	[string]$appName = 'VLC media player'
+	[string]$appVersion = '3.0.16'
 	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = '19/06/2021'
-	[string]$appScriptAuthor = 'gerkec'
+	[string]$appScriptDate = '03/09/2021'
+	[string]$appScriptAuthor = '<author name>'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
-	[string]$installName = ''
-	[string]$installTitle = ''
+	[string]$installName = 'VLC media player'
+	[string]$installTitle = $appName
 
 	##* Do not modify section below
 	#region DoNotModify
@@ -110,14 +110,23 @@ Try {
 	##* END VARIABLE DECLARATION
 	##*===============================================
 
+	## Organisation Template Variables, uncomment what you need.
+	[string]$appInstall = "vlc-3.0.16-win64.exe"
+	[string]$appUnInstall = "C:\Program Files\VideoLAN\VLC\uninstall.exe"
+	##*ORG*## [string]$appGUID = "{00000000-0000-0000-0000-000000000000}"
+	[string]$appProcess = "vlc.exe"
+	[string]$appShortcut = "VLC.lnk"
+	[string]$appDesktopShortcut = "$envCommonDesktop\$appShortcut"
+	[string]$appStartMenuShortcut = "$envCommonStartMenuPrograms\$appShortcut"
+
 	If ($deploymentType -ine 'Uninstall' -and $deploymentType -ine 'Repair') {
 		##*===============================================
 		##* PRE-INSTALLATION
 		##*===============================================
 		[string]$installPhase = 'Pre-Installation'
 
-		## Show Welcome Message, close apps if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
-		Show-InstallationWelcome -CloseApps 'iexplore,AcroRd32,cidaemon' -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
+		## Show Welcome Message, close application if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
+		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -AllowDefer -DeferTimes 3 -CheckDiskSpace -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -137,7 +146,8 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-		Execute-Process -Path 'setup.exe' -Parameters "--silent" -WindowStyle 'Hidden'
+		##*ORG*##Execute-MSI -Action Install -Path "$appInstall" -Parameters '/qn'
+		Execute-Process -Path "$appInstall" -Parameters "/L=1033 /S" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -145,10 +155,14 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
-		Remove-Item -Path "C:\Users\Public\Desktop\Adobe Creative Cloud.lnk"
+		If ( Test-Path -Path "$appDesktopShortcut" ){
+			Remove-Item -Path "$appDesktopShortcut"
+		}
+
+		##*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
 
 		## Display a message at the end of the install
-		If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can now sign in to Creative Cloud Desktop and install the applications you are subscribed too.' -ButtonRightText 'OK' -Icon Information -NoWait }
+		##If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
 	}
 	ElseIf ($deploymentType -ieq 'Uninstall')
 	{
@@ -157,8 +171,8 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Uninstallation'
 
-		## Show Welcome Message, close apps with a 60 second countdown before automatically closing
-		Show-InstallationWelcome -CloseApps 'iexplore,AcroRd32,cidaemon' -CloseAppsCountdown 60
+		## Show Welcome Message, close application with a 60 second countdown before automatically closing
+		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -178,7 +192,8 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-		Execute-Process -Path 'C:\Program Files (x86)\Adobe\Adobe Creative Cloud\Utils\Creative Cloud Uninstaller.exe' -Parameters "-uninstall" -WindowStyle 'Hidden'
+		##*ORG*##Execute-MSI -Action Uninstall -Path "$appGUID"
+		Execute-Process -Path "$appUnInstall" -Parameters "/S" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-UNINSTALLATION
@@ -186,7 +201,7 @@ Try {
 		[string]$installPhase = 'Post-Uninstallation'
 
 		## <Perform Post-Uninstallation tasks here>
-		Remove-Item -Path "C:\Users\Public\Desktop\Adobe Creative Cloud.lnk"
+		##*ORG*##Remove-Item -Path "$appStartMenuShortcut" -Force
 
 	}
 	ElseIf ($deploymentType -ieq 'Repair')
@@ -196,10 +211,16 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Repair'
 
+		## Show Welcome Message, close the application with a 60 second countdown before automatically closing
+		##*ORG*##Show-InstallationWelcome -CloseApps "$appProcess" -CloseAppsCountdown 60
+
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
 
 		## <Perform Pre-Repair tasks here>
+		If ( Test-Path -Path "$appUnInstall" ){
+			Execute-Process -Path "$appUnInstall" -Parameters "/S" -WindowStyle 'Hidden'
+		}
 
 		##*===============================================
 		##* REPAIR
@@ -212,7 +233,8 @@ Try {
 			Execute-MSI @ExecuteDefaultMSISplat
 		}
 		# <Perform Repair tasks here>
-		Execute-Process -Path 'C:\Program Files (x86)\Adobe\Adobe Creative Cloud\Utils\Creative Cloud Uninstaller.exe' -WindowStyle 'Hidden'
+		##*ORG*##Execute-MSI -Action Repair -Path "$appGUID" -Parameters '/QN'
+		Execute-Process -Path "$appInstall" -Parameters "/L=1033 /S" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-REPAIR
@@ -220,7 +242,12 @@ Try {
 		[string]$installPhase = 'Post-Repair'
 
 		## <Perform Post-Repair tasks here>
-		Remove-Item -Path "C:\Users\Public\Desktop\Adobe Creative Cloud.lnk"
+		If ( Test-Path -Path "$appDesktopShortcut" ){
+			Remove-Item -Path "$appDesktopShortcut"
+		}
+
+		##*ORG*####*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
+
     }
 	##*===============================================
 	##* END SCRIPT BODY
