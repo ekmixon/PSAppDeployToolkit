@@ -61,18 +61,18 @@ Try {
 	##* VARIABLE DECLARATION
 	##*===============================================
 	## Variables: Application
-	[string]$appVendor = 'VLC media player'
-	[string]$appName = 'VLC media player'
-	[string]$appVersion = '3.0.16'
-	[string]$appArch = 'x64'
+	[string]$appVendor = ''
+	[string]$appName = ''
+	[string]$appVersion = ''
+	[string]$appArch = ''
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = '03/09/2021'
+	[string]$appScriptDate = 'XX/XX/20XX'
 	[string]$appScriptAuthor = '<author name>'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
-	[string]$installName = 'VLC media player'
+	[string]$installName = ''
 	[string]$installTitle = $appName
 
 	##* Do not modify section below
@@ -111,11 +111,11 @@ Try {
 	##*===============================================
 
 	## Organisation Template Variables, uncomment what you need.
-	[string]$appInstall = "vlc-3.0.16-win64.exe"
-	[string]$appUnInstall = "C:\Program Files\VideoLAN\VLC\uninstall.exe"
+	##*ORG*## [string]$appInstall = "APP.exe or APP.msi"
+	##*ORG*## [string]$appUnInstall = "C:\Program Files\APP\uninstall.exe if GUID not available"
 	##*ORG*## [string]$appGUID = "{00000000-0000-0000-0000-000000000000}"
-	[string]$appProcess = "vlc.exe"
-	[string]$appShortcut = "VLC.lnk"
+	##*ORG*## [string]$appProcess = "APP process.exe"
+	[string]$appShortcut = "APP.lnk"
 	[string]$appDesktopShortcut = "$envCommonDesktop\$appShortcut"
 	[string]$appStartMenuShortcut = "$envCommonStartMenuPrograms\$appShortcut"
 
@@ -147,7 +147,7 @@ Try {
 
 		## <Perform Installation tasks here>
 		##*ORG*##Execute-MSI -Action Install -Path "$appInstall" -Parameters '/qn'
-		Execute-Process -Path "$appInstall" -Parameters "/L=1033 /S" -WindowStyle 'Hidden'
+		##*ORG*##Execute-Process -Path "$appInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -155,14 +155,14 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
-		If ( Test-Path -Path "$appDesktopShortcut" ){
-			Remove-Item -Path "$appDesktopShortcut"
-		}
+		##*ORG*##If ( Test-Path -Path "$appDesktopShortcut" ){
+		##*ORG*##Remove-Item -Path "$appDesktopShortcut"
+		##*ORG*##}
 
 		##*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
 
 		## Display a message at the end of the install
-		##If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
+		If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
 	}
 	ElseIf ($deploymentType -ieq 'Uninstall')
 	{
@@ -193,7 +193,7 @@ Try {
 
 		# <Perform Uninstallation tasks here>
 		##*ORG*##Execute-MSI -Action Uninstall -Path "$appGUID"
-		Execute-Process -Path "$appUnInstall" -Parameters "/S" -WindowStyle 'Hidden'
+		##*ORG*##Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-UNINSTALLATION
@@ -218,9 +218,9 @@ Try {
 		Show-InstallationProgress
 
 		## <Perform Pre-Repair tasks here>
-		If ( Test-Path -Path "$appUnInstall" ){
-			Execute-Process -Path "$appUnInstall" -Parameters "/S" -WindowStyle 'Hidden'
-		}
+		##*ORG*##If ( Test-Path -Path "$appUnInstall" ){
+		##*ORG*##	Execute-Process -Path "$appUnInstall" -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
+		##*ORG*##}
 
 		##*===============================================
 		##* REPAIR
@@ -234,7 +234,7 @@ Try {
 		}
 		# <Perform Repair tasks here>
 		##*ORG*##Execute-MSI -Action Repair -Path "$appGUID" -Parameters '/QN'
-		Execute-Process -Path "$appInstall" -Parameters "/L=1033 /S" -WindowStyle 'Hidden'
+		##*ORG*##Execute-Process -Path $appInstall -Parameters "/SILENT /VERYSILENT /NORESTART" -WindowStyle 'Hidden'
 
 		##*===============================================
 		##* POST-REPAIR
@@ -242,9 +242,9 @@ Try {
 		[string]$installPhase = 'Post-Repair'
 
 		## <Perform Post-Repair tasks here>
-		If ( Test-Path -Path "$appDesktopShortcut" ){
-			Remove-Item -Path "$appDesktopShortcut"
-		}
+		##*ORG*##If ( Test-Path -Path "$appDesktopShortcut" ){
+		##*ORG*##Remove-Item -Path "$appDesktopShortcut"
+		##*ORG*##}
 
 		##*ORG*####*ORG*##Copy-Item -Path "$dirFiles\$appShortcut" -Destination "$appStartMenuShortcut" -Force
 
